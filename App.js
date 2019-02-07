@@ -6,7 +6,7 @@ import * as firebase from 'firebase';
 import { firebaseConfig } from './location-app/constants/firebase';
 import MainGuestScreen from './location-app/screens/guests/MainGuestScreen';
 import MainUserScreen from './location-app/screens/users/MainUserScreen';
-import Toast, { DURATION } from 'react-native-easy-toast';
+import Toast from 'react-native-easy-toast';
 
 firebase.initializeApp(firebaseConfig);
 
@@ -33,7 +33,7 @@ export class App extends Component {
 					loaded: true
 				});
 
-				this.refToast.current.show('Successfully Authenticated!', DURATION.LENGTH_LONG);
+				this.refToast.current.show('Successfully Authenticated!', 5000);
 			} else {
 				this.setState({
 					isLogged: false,
