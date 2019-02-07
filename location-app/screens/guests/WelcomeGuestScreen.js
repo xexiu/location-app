@@ -1,14 +1,13 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import { connect } from 'react-redux';
 import { AppButton, AppSocialIcon, BackgroundImage } from '../../components';
 import { buttonsStyle, containerStyle } from '../../styles/index';
-import * as actions from '../../actions';
 import PropTypes from 'prop-types';
+import { facebookLogin } from '../../actions';
 
 /* eslint-disable no-console */
 
-export class WelcomeGuestScreen extends Component {
+export default class WelcomeGuestScreen extends Component {
 	render() {
 		return (
 			<BackgroundImage
@@ -18,12 +17,12 @@ export class WelcomeGuestScreen extends Component {
 					<AppButton
 						btnTitle="Login"
 						btnStyle={buttonsStyle.buttonsLoginStyle}
-						btnOnPress={(evt) => console.log('BYEEE')}
+						btnOnPress={(evt) => this.props.navigation.navigate('LoginGuestScreen')}
 					/>
 					<AppButton
 						btnTitle="Register"
 						btnStyle={buttonsStyle.buttonsLoginStyle}
-						btnOnPress={(evt) => console.log('REGISTER')}
+						btnOnPress={(evt) => this.props.navigation.navigate('RegisterGuestScreen')}
 					/>
 
 					<View>
@@ -32,7 +31,7 @@ export class WelcomeGuestScreen extends Component {
 							socialIconButton
 							socialIconTitle="Login with Facebook"
 							socialIconType="facebook"
-							socialIconOnPress={(evt) => this.props.facebookLogin()}
+							socialIconOnPress={(evt) => facebookLogin()}
 						/>
 					</View>
 				</View>
@@ -41,11 +40,8 @@ export class WelcomeGuestScreen extends Component {
 	}
 }
 
-function mapStateToProps({ auth }) {
-	return {
-		fbLogin: auth.fbLogin
-	};
-}
-WelcomeGuestScreen.propTypes = { facebookLogin: PropTypes.func };
-
-export default connect(mapStateToProps, actions)(WelcomeGuestScreen);
+WelcomeGuestScreen.propTypes = {
+	facebookLogin: PropTypes.func,
+	login: PropTypes.func,
+	navigation: PropTypes.object
+};
