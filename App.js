@@ -33,7 +33,7 @@ export class App extends Component {
 					loaded: true
 				});
 
-				this.refToast.current.show('Successfully Authenticated!', 5000);
+				this.refToast.current.show('Successfully Authenticated!', 1000);
 			} else {
 				this.setState({
 					isLogged: false,
