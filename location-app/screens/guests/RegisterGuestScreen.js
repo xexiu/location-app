@@ -90,7 +90,7 @@ export default class RegisterGuestScreen extends Component {
 			<BackgroundImage source={require('../../../assets/images/backgroundApp.png')}>
 				<ScrollView>
 					<View>
-						<Card wrapperStyle={{ paddingLeft: 10 }} title="Regístrate">
+						<Card wrapperStyle={{ paddingLeft: 10 }} title="Register">
 							<Form
 								ref={this.refForm}
 								type={this.user}

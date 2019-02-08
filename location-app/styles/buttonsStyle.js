@@ -25,5 +25,13 @@ export const buttonsStyle = {
 		marginBottom: 5,
 		width: 190,
 		marginTop: 0
+	},
+	headerButtons: {
+		btnLeftStyle: {
+			marginLeft: 20
+		},
+		btnRightStyle: {
+			marginRight: 20
+		}
 	}
 };
