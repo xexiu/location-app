@@ -3,7 +3,9 @@ import { View, Text } from 'react-native';
 import * as firebase from 'firebase';
 import PreLoader from '../../components/PreLoader';
 
-export default class WelcomeGuestScreen extends Component {
+/* eslint-disable no-console */
+
+export default class LandingUserScreen extends Component {
 	constructor() {
 		super();
 
@@ -17,6 +19,7 @@ export default class WelcomeGuestScreen extends Component {
 		const { currentUser } = firebase.auth(); // user authenticated --> facebook login or email/pass
 
 		if (currentUser) {
+
 			const userNameRef = firebase.database().ref(`users/${currentUser.uid}`);
 
 			userNameRef.on('value', attrs => {
@@ -29,6 +32,9 @@ export default class WelcomeGuestScreen extends Component {
 	}
 	render() {
 		const { userName, loaded } = this.state;
+		/* @TODO
+			- should we show the userName somewhere?
+		*/
 
 		if (!loaded) {
 			return (<PreLoader />);
@@ -37,7 +43,9 @@ export default class WelcomeGuestScreen extends Component {
 
 		return (
 			<View>
-				<Text>Welcome {userName}!</Text>
+				<Text>Locations!</Text>
+				<Text>Locations!</Text>
+				<Text>Locations!</Text>
 			</View>
 		);
 	}
