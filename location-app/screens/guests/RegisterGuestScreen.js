@@ -4,7 +4,7 @@ import { View, ScrollView } from 'react-native';
 import * as firebase from 'firebase';
 import { formValidation } from '../../utils/validation';
 import { buttonsStyle } from '../../styles/index';
-import { AppButton, BackgroundImage } from '../../components';
+import { AppButton, BackgroundImage } from '../../components/common';
 import Toast from 'react-native-easy-toast';
 import t from 'tcomb-form-native';
 

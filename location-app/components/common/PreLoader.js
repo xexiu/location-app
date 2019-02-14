@@ -11,7 +11,7 @@ const styles = {
 	}
 };
 
-export default class PreLoader extends Component {
+export class PreLoader extends Component {
 	render() {
 		return (
 			<View style={styles.preloader}>

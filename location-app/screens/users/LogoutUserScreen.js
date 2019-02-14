@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import * as firebase from 'firebase';
 import Toast from 'react-native-easy-toast';
 
-export default class Logout extends Component {
+export default class LogoutUserScreen extends Component {
 	constructor() {
 		super();
 

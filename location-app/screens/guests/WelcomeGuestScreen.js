@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
-import { AppButton, AppSocialIcon, BackgroundImage } from '../../components';
+import { AppButton, AppSocialIcon, BackgroundImage } from '../../components/common';
 import { buttonsStyle, containerStyle } from '../../styles/index';
 import PropTypes from 'prop-types';
 import { facebookLogin } from '../../actions';

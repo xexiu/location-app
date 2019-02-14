@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import store from './location-app/store';
-import PreLoader from './location-app/components/PreLoader';
+import { PreLoader } from './location-app/components/common';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './location-app/constants/firebase';
 import MainGuestScreen from './location-app/screens/guests/MainGuestScreen';
@@ -49,7 +49,7 @@ export class App extends Component {
 
 		if (!loaded) {
 			return (<PreLoader />);
-		} else if (isLogged) {
+		} else if (true) { // set true for testing
 			return (
 				<Provider store={store}>
 					<Toast ref={this.refToast} />

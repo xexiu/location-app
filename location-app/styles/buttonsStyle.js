@@ -33,5 +33,18 @@ export const buttonsStyle = {
 		btnRightStyle: {
 			marginRight: 20
 		}
+	},
+	detailLocationBtns: {
+		alignSelf: 'center',
+		justifyContent: 'space-between',
+		width: 150,
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		bottom: 20,
+		padding: 10,
+		height: 50,
+		position: 'absolute',
+		backgroundColor: 'rgba(33, 33, 34, 0.6)',
+		borderRadius: 40
 	}
 };

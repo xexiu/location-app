@@ -17,6 +17,7 @@
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
     "react-native-easy-toast": "^1.2.0",
     "react-native-elements": "^1.0.0",
+    "react-native-touchable-scale": "^2.0.0",
     "react-navigation": "^3.1.4",
     "react-redux": "^6.0.0",
     "redux": "^4.0.1",

@@ -3,7 +3,7 @@ import { Card } from 'react-native-elements';
 import { View, ScrollView } from 'react-native';
 import t from 'tcomb-form-native';
 import { formValidation } from '../../utils/validation';
-import { AppButton, BackgroundImage } from '../../components';
+import { AppButton, BackgroundImage } from '../../components/common';
 import { buttonsStyle } from '../../styles/index';
 import { login } from '../../actions';
 
