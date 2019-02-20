@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Text } from 'react-native';
-import { getCurrentYear } from '../../utils';
+import { getCurrentYear } from '../../utils/common';
 import { footerStyle } from '../../styles';
 
 /* eslint-disable no-console, class-methods-use-this */

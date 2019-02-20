@@ -3,7 +3,8 @@ import {
 	FACEBOOK_APP_ID
 } from '../constants/facebook';
 import * as firebase from 'firebase';
-import { signInUser, fetchAsync } from '../utils';
+import { signInUser } from '../utils/user';
+import { fetchAsync } from '../utils/common';
 
 /* eslint-disable no-console */
 
@@ -12,7 +13,7 @@ function createUser(data) {
 	const password = `fb_password_${data.id}`;
 
 	firebase.auth().createUserWithEmailAndPassword(email, password).then(auth => {
-		firebase.database().ref('users/' + auth.user.uid).set({
+		firebase.database().ref(`Users/${auth.user.uid}`).set({
 			name: data.name,
 			email: email,
 			password

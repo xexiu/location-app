@@ -24,11 +24,12 @@ export class App extends Component {
 
 	async componentDidMount() {
 		// For Testing NOT logged
-		firebase.auth().signOut();
+		//firebase.auth().signOut();
 
 		await firebase.auth().onAuthStateChanged(user => {
 			if (user) {
 				this.setState({
+					user: user,
 					isLogged: true,
 					loaded: true
 				});
@@ -45,11 +46,14 @@ export class App extends Component {
 
 
 	render() {
-		const { isLogged, loaded } = this.state;
+		const {
+			isLogged,
+			loaded
+		} = this.state;
 
 		if (!loaded) {
 			return (<PreLoader />);
-		} else if (true) { // set true for testing
+		} else if (isLogged) { // set true for testing
 			return (
 				<Provider store={store}>
 					<Toast ref={this.refToast} />

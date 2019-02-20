@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Button } from 'react-native-elements';
 import PropTypes from 'prop-types';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 function defaultAction(evt) {
 	// eslint-disable-next-line
@@ -11,15 +12,17 @@ export class AppButton extends Component {
 	render() {
 		const {
 			btnTitle = 'No btn title!',
-			btnStyle,
+			btnStyle = { backgroundColor: 'transparent' },
 			btnLoading = false,
 			btnRaised = false,
 			btnType = 'solid',
-			btnOnPress = defaultAction
+			btnOnPress = defaultAction,
+			btnIcon
 		} = this.props;
 
 		return (
 			<Button
+				icon={btnIcon}
 				loading={btnLoading}
 				title={btnTitle}
 				type={btnType}
@@ -37,6 +40,7 @@ AppButton.propTypes = {
 	btnLoading: PropTypes.bool,
 	btnType: PropTypes.string,
 	btnOnPress: PropTypes.func,
-	btnRaised: PropTypes.bool
+	btnRaised: PropTypes.bool,
+	btnIcon: PropTypes.node
 };
 

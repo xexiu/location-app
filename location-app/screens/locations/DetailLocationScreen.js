@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View } from 'react-native';
 import { MapView, Permissions } from 'expo';
 import { Icon } from 'react-native-elements';
 import { PreLoader } from '../../components/common';
@@ -14,6 +14,7 @@ export default class DetailLocationScreen extends Component {
 	constructor(props) {
 		super(props);
 
+		this._isMounted = false;
 		this.state = {
 			ready: true,
 			loaded: false,
@@ -27,31 +28,29 @@ export default class DetailLocationScreen extends Component {
 		};
 	}
 
-	buildPlaceObj(mapsObj) {
-		return Object.assign({}, mapsObj);
+	componentWillUnmount() {
+		this._isMounted = false;
 	}
 
 	async componentDidMount() {
+		this._isMounted = true;
 		const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
 		if (status === 'granted') {
 			const { params } = this.props.navigation.state;
-			const { place, geoCode } = params;
-			const placeObj = this.buildPlaceObj(geoCode || place);
-			const { location } = placeObj.geometry;
-			const placeName = placeObj.name || placeObj.formatted_address;
-			const types = placeObj.types;
+			const { location } = params.geometry;
+			const types = params.types;
 			const description = types && String(types).replace(/\,/g, ' - ');
 
-			location['name'] = placeName;
+			location['name'] = params.name;
 			location['description'] = description;
 
-			this.setState({
+			this._isMounted && this.setState({
 				loaded: true,
 				markers: [location]
 			});
 
-			this.map.animateToRegion({
+			this._isMounted && this.map.animateToRegion({
 				...this.state.region,
 				latitude: location.lat,
 				longitude: location.lng
@@ -64,6 +63,14 @@ export default class DetailLocationScreen extends Component {
 			this.setState({ ready: true });
 		}
 	};
+
+	onChangeTextInput(evt) {
+		// evt
+	}
+
+	onSubmitEditingInput(evt) {
+		// evt
+	}
 
 	render() {
 		const { loaded } = this.state;

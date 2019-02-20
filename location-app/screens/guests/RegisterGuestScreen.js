@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Card } from 'react-native-elements';
 import { View, ScrollView } from 'react-native';
 import * as firebase from 'firebase';
-import { formValidation } from '../../utils/validation';
+import { formValidation } from '../../utils/common';
 import { buttonsStyle } from '../../styles/index';
 import { AppButton, BackgroundImage } from '../../components/common';
 import Toast from 'react-native-easy-toast';
@@ -73,7 +73,7 @@ export default class RegisterGuestScreen extends Component {
 			firebase.auth().createUserWithEmailAndPassword(
 				this.validate.email, this.validate.password
 			).then(auth => {
-				firebase.database().ref('users/' + auth.user.uid).set({
+				firebase.database().ref(`Users/${auth.user.uid}`).set({
 					name: this.validate.name,
 					email: this.validate.email,
 					password: this.validate.password

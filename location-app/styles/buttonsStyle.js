@@ -31,7 +31,9 @@ export const buttonsStyle = {
 			marginLeft: 20
 		},
 		btnRightStyle: {
-			marginRight: 20
+			flexDirection: 'row',
+			width: 60,
+			paddingLeft: 20
 		}
 	},
 	detailLocationBtns: {
@@ -45,6 +47,17 @@ export const buttonsStyle = {
 		height: 50,
 		position: 'absolute',
 		backgroundColor: 'rgba(33, 33, 34, 0.6)',
+		borderRadius: 40
+	},
+	saveLocationFooterBtns: {
+		alignSelf: 'center',
+		justifyContent: 'space-between',
+		flexDirection: 'row',
+		flexWrap: 'wrap',
+		bottom: 50,
+		padding: 10,
+		height: 50,
+		position: 'absolute',
 		borderRadius: 40
 	}
 };
