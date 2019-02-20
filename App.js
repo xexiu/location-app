@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import store from './location-app/store';
-import PreLoader from './location-app/components/PreLoader';
+import { PreLoader } from './location-app/components/common';
 import * as firebase from 'firebase';
 import { firebaseConfig } from './location-app/constants/firebase';
 import MainGuestScreen from './location-app/screens/guests/MainGuestScreen';
@@ -24,11 +24,12 @@ export class App extends Component {
 
 	async componentDidMount() {
 		// For Testing NOT logged
-		firebase.auth().signOut();
+		//firebase.auth().signOut();
 
 		await firebase.auth().onAuthStateChanged(user => {
 			if (user) {
 				this.setState({
+					user: user,
 					isLogged: true,
 					loaded: true
 				});
@@ -45,11 +46,14 @@ export class App extends Component {
 
 
 	render() {
-		const { isLogged, loaded } = this.state;
+		const {
+			isLogged,
+			loaded
+		} = this.state;
 
 		if (!loaded) {
 			return (<PreLoader />);
-		} else if (isLogged) {
+		} else if (isLogged) { // set true for testing
 			return (
 				<Provider store={store}>
 					<Toast ref={this.refToast} />

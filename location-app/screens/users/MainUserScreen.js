@@ -4,11 +4,17 @@ import {
 	createAppContainer,
 	createDrawerNavigator
 } from 'react-navigation';
+import * as firebase from 'firebase';
+import { getCurrentPosition } from '../../utils/google';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { buttonsStyle } from '../../styles';
 import LandingUserScreen from './LandingUserScreen';
 import FavoritesUserScreen from './FavoritesUserScreen';
 import LogoutUserScreen from '../users/LogoutUserScreen';
+import DetailLocationScreen from '../locations/DetailLocationScreen';
+import SaveCurrentLocationScreen from '../locations/SaveCurrentLocationScreen';
+
+/* eslint-disable max-len */
 
 const { headerButtons } = buttonsStyle;
 const navigationOptions = {
@@ -16,6 +22,7 @@ const navigationOptions = {
 		headerStyle: {
 			backgroundColor: '#f4511e' // red-orange of the header
 		},
+		headerTintColor: 'white',
 		headerTitleStyle: {
 			textAlign: 'center',
 			alignSelf: 'center',
@@ -31,13 +38,23 @@ function openSideBar(navigation) {
 		return navigation.openDrawer();
 	};
 }
-function goHome(navigation) {
+
+function navigateTo(navigation, screenName) {
+	let coords;
+
+	getCurrentPosition().then(data => {
+		coords = data;
+	});
+
 	return function() {
-		return navigation.navigate('LandingUserScreen');
+		return navigation.navigate(screenName, {
+			user: firebase.auth(),
+			currentPosition: coords
+		});
 	};
 }
-function buildIcon(icon, style, size, color, action) {
 
+function buildIcon(icon, style, size, color, action) {
 	return (<Icon
 		name={icon}
 		style={style}
@@ -47,6 +64,7 @@ function buildIcon(icon, style, size, color, action) {
 	/>);
 
 }
+
 function getDrawerIcon(iconName, tintColor) {
 	return (
 		<Icon name={iconName} size={20} color={tintColor} />
@@ -59,9 +77,19 @@ const landingUserScreenStack = createStackNavigator(
 			screen: LandingUserScreen,
 			navigationOptions: ({ navigation }) => ({
 				title: 'Locations',
-				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', goHome(navigation)),
+				headerRight: buildIcon('location-arrow', [headerButtons.btnRightStyle], 30, 'white', navigateTo(navigation, 'SaveCurrentLocationScreen')),
 				headerLeft: buildIcon('bars', headerButtons.btnLeftStyle, 30, 'white', openSideBar(navigation))
 			})
+		},
+		DetailLocationScreen: {
+			screen: DetailLocationScreen,
+			navigationOptions: ({ navigation }) => ({
+				title: 'Location on Map',
+				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen'))
+			})
+		},
+		SaveCurrentLocationScreen: {
+			screen: SaveCurrentLocationScreen
 		}
 	},
 	{
@@ -70,6 +98,7 @@ const landingUserScreenStack = createStackNavigator(
 			headerStyle: {
 				backgroundColor: '#f4511e'
 			},
+			headerTintColor: 'white',
 			headerTitleStyle: {
 				textAlign: 'center',
 				alignSelf: 'center',
@@ -87,7 +116,7 @@ const favoritesUserScreenStack = createStackNavigator(
 			screen: FavoritesUserScreen,
 			navigationOptions: ({ navigation }) => ({
 				title: 'Favorite Locations',
-				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', goHome(navigation)),
+				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen')),
 				headerLeft: buildIcon('bars', headerButtons.btnLeftStyle, 30, 'white', openSideBar(navigation))
 			})
 		}

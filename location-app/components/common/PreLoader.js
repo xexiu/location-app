@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { View } from 'react-native';
+import * as Progress from 'react-native-progress';
 /* eslint-disable class-methods-use-this */
 
 const styles = {
@@ -11,11 +12,11 @@ const styles = {
 	}
 };
 
-export default class PreLoader extends Component {
+export class PreLoader extends Component {
 	render() {
 		return (
 			<View style={styles.preloader}>
-				<ActivityIndicator style={{ height: 80 }} size="large" />
+				<Progress.Pie progress={0.4} size={30} indeterminate={true} />
 			</View>
 		);
 	}
