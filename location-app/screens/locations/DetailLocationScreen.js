@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { View, Alert } from 'react-native';
+import { View, Alert, Text, Modal, TextInput } from 'react-native';
 import { MapView, Permissions } from 'expo';
 import { Icon } from 'react-native-elements';
-import { PreLoader } from '../../components/common';
+import { PreLoader, AppButton } from '../../components/common';
 import PropTypes from 'prop-types';
 import TouchableScale from 'react-native-touchable-scale';
 import { buttonsStyle } from '../../styles';
@@ -20,6 +20,8 @@ export default class DetailLocationScreen extends Component {
 		this._isMounted = false;
 		this.refToast = React.createRef();
 		this.state = {
+			isModalVisible: false,
+			locationName: '',
 			ready: true,
 			loaded: false,
 			markers: [],
@@ -64,17 +66,20 @@ export default class DetailLocationScreen extends Component {
 	};
 
 	updateItem() {
+		this.setState({ isModalVisible: false });
+
 		const { location, user } = this.props.navigation.state.params;
 		const { currentUser } = user;
+		const { locationName } = this.state;
 
 		firebase.database().ref().child(`Users/${currentUser.uid}/locations/${location.key}`).update({
-			name: 'test'
+			name: locationName
 		}, () => {
 			const navigateAction = NavigationActions.navigate({
 				routeName: 'LandingUserScreen'
 			});
 
-			this.refToast.current.show('Location updated', 1000, () =>{
+			this.refToast.current.show('Location name updated', 1000, () =>{
 				this.props.navigation.dispatch(navigateAction);
 			});
 		});
@@ -112,10 +117,15 @@ export default class DetailLocationScreen extends Component {
 		);
 	}
 
+	handleLocationName(text) {
+		this.setState({ locationName: text });
+	}
+
 	render() {
 		const {
 			loaded,
-			markers
+			markers,
+			isModalVisible
 		} = this.state;
 
 		if (!loaded) {
@@ -146,6 +156,52 @@ export default class DetailLocationScreen extends Component {
 				>
 					{buildMarker(markers)}
 				</MapView>
+				<View>
+					<Modal
+						visible={isModalVisible}
+						transparent={true}
+						animationType="slide"
+					>
+						<View style={{
+							backgroundColor: 'rgba(31, 15, 12, 0.6)',
+							flex: 1,
+							justifyContent: 'center',
+							alignItems: 'center'
+						}}>
+							<Text
+								style={
+									{
+										color: 'white',
+										fontSize: 20,
+										fontWeight: 'bold'
+									}
+								}
+							>Enter a name for this location!</Text>
+							<TextInput
+								style={{
+									backgroundColor: 'white',
+									padding: 4,
+									height: 40,
+									width: 190,
+									marginTop: 5,
+									marginBottom: 5,
+									borderRadius: 5
+								}}
+								underlineColorAndroid="transparent"
+								placeholderTextColor="#9a73ef"
+								autoCapitalize="none"
+								onChangeText={this.handleLocationName.bind(this)}
+								onSubmitEditing={this.updateItem.bind(this)}
+							/>
+
+							<AppButton
+								btnTitle="Cancel"
+								btnStyle={buttonsStyle.buttonsLoginStyle}
+								btnOnPress={() => this.setState({ isModalVisible: false })}
+							/>
+						</View>
+					</Modal>
+				</View>
 				<View style={buttonsStyle.detailLocationBtns}>
 					<Icon
 						Component={TouchableScale}
@@ -162,7 +218,7 @@ export default class DetailLocationScreen extends Component {
 						name='pencil'
 						type='font-awesome'
 						color='white'
-						onPress={this.updateItem.bind(this)} />
+						onPress={() => this.setState({ isModalVisible: true })} />
 
 					<Icon
 						Component={TouchableScale}
