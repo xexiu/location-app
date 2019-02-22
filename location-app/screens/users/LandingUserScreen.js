@@ -28,7 +28,10 @@ export default class LandingUserScreen extends Component {
 	goToLocationDetailOnMap(location) {
 		const navigateAction = NavigationActions.navigate({
 			routeName: 'DetailLocationScreen',
-			params: location
+			params: {
+				location: location,
+				user: firebase.auth()
+			}
 		});
 
 		this.props.navigation.dispatch(navigateAction);
@@ -49,6 +52,8 @@ export default class LandingUserScreen extends Component {
 
 			snapshot.forEach(s => {
 				const locationDetails = snapshot.child(s.key).val();
+
+				locationDetails['key'] = s.key;
 
 				location.push(locationDetails);
 			});

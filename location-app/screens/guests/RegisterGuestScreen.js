@@ -15,6 +15,10 @@ export default class RegisterGuestScreen extends Component {
 	constructor(props) {
 		super(props);
 
+		console.ignoredYellowBox = [
+			'Setting a timer'
+		];
+
 		this.refForm = React.createRef();
 		this.refToast = React.createRef();
 		this.state = {

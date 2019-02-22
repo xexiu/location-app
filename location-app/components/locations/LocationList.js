@@ -18,8 +18,9 @@ export default class LocationList extends Component {
 		} = this.props;
 
 		return (
-			<ScrollView>
+			<ScrollView keyboardShouldPersistTaps="always">
 				<FlatList
+					keyboardShouldPersistTaps="always"
 					data={itemsList}
 					renderItem={item => action(item.item)}
 					keyExtractor={(item, index) => index.toString()}

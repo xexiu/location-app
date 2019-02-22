@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 import { MapView, Permissions } from 'expo';
 import { Icon } from 'react-native-elements';
 import { PreLoader } from '../../components/common';
 import PropTypes from 'prop-types';
 import TouchableScale from 'react-native-touchable-scale';
-import { Marker } from 'react-native-maps';
 import { buttonsStyle } from '../../styles';
+import * as firebase from 'firebase';
+import { NavigationActions } from 'react-navigation';
+import Toast from 'react-native-easy-toast';
+import { buildMarker } from '../../utils/location';
 
 /* eslint-disable no-console, class-methods-use-this */
 
@@ -15,10 +18,12 @@ export default class DetailLocationScreen extends Component {
 		super(props);
 
 		this._isMounted = false;
+		this.refToast = React.createRef();
 		this.state = {
 			ready: true,
 			loaded: false,
 			markers: [],
+			visible: false,
 			region: {
 				longitude: 0,
 				latitude: 0,
@@ -37,13 +42,7 @@ export default class DetailLocationScreen extends Component {
 		const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
 		if (status === 'granted') {
-			const { params } = this.props.navigation.state;
-			const { location } = params.geometry;
-			const types = params.types;
-			const description = types && String(types).replace(/\,/g, ' - ');
-
-			location['name'] = params.name;
-			location['description'] = description;
+			const { location } = this.props.navigation.state.params;
 
 			this._isMounted && this.setState({
 				loaded: true,
@@ -52,8 +51,8 @@ export default class DetailLocationScreen extends Component {
 
 			this._isMounted && this.map.animateToRegion({
 				...this.state.region,
-				latitude: location.lat,
-				longitude: location.lng
+				latitude: location.geometry.location.lat,
+				longitude: location.geometry.location.lng
 			});
 		}
 	}
@@ -64,16 +63,60 @@ export default class DetailLocationScreen extends Component {
 		}
 	};
 
-	onChangeTextInput(evt) {
-		// evt
+	updateItem() {
+		const { location, user } = this.props.navigation.state.params;
+		const { currentUser } = user;
+
+		firebase.database().ref().child(`Users/${currentUser.uid}/locations/${location.key}`).update({
+			name: 'test'
+		}, () => {
+			const navigateAction = NavigationActions.navigate({
+				routeName: 'LandingUserScreen'
+			});
+
+			this.refToast.current.show('Location updated', 1000, () =>{
+				this.props.navigation.dispatch(navigateAction);
+			});
+		});
 	}
 
-	onSubmitEditingInput(evt) {
-		// evt
+	deleteItem() {
+		const { location, user } = this.props.navigation.state.params;
+		const { currentUser } = user;
+
+		firebase.database().ref().child(`Users/${currentUser.uid}/locations/${location.key}`).remove(() => {
+			const navigateAction = NavigationActions.navigate({
+				routeName: 'LandingUserScreen'
+			});
+
+			this.refToast.current.show('Location removed', 1000, () =>{
+				this.props.navigation.dispatch(navigateAction);
+			});
+		});
+	}
+
+	showAlert() {
+		Alert.alert(
+			'Delete saved Location?',
+			'This action is permanent.',
+			[
+				{ text: 'Ask me later', onPress: () => console.log('Ask me later pressed') },
+				{
+					text: 'Cancel',
+					onPress: () => console.log('Cancel Pressed'),
+					style: 'cancel'
+				},
+				{ text: 'OK', onPress: this.deleteItem.bind(this) }
+			],
+			{ cancelable: false },
+		);
 	}
 
 	render() {
-		const { loaded } = this.state;
+		const {
+			loaded,
+			markers
+		} = this.state;
 
 		if (!loaded) {
 			return (<PreLoader />);
@@ -101,18 +144,7 @@ export default class DetailLocationScreen extends Component {
 					}}
 					onMapReady={this.onMapReady}
 				>
-					{this.state.markers.map(marker => (
-						<Marker
-							coordinate={{
-								latitude: marker.lat,
-								longitude: marker.lng
-							}}
-							title={marker.name}
-							description={marker.description}
-							key={(item, index) => index.toString()}
-						>
-						</Marker>
-					))}
+					{buildMarker(markers)}
 				</MapView>
 				<View style={buttonsStyle.detailLocationBtns}>
 					<Icon
@@ -121,7 +153,8 @@ export default class DetailLocationScreen extends Component {
 						name='trash'
 						type='font-awesome'
 						color='white'
-						onPress={() => console.log('Delete')} />
+						onPress={this.showAlert.bind(this)}
+					/>
 
 					<Icon
 						Component={TouchableScale}
@@ -129,7 +162,7 @@ export default class DetailLocationScreen extends Component {
 						name='pencil'
 						type='font-awesome'
 						color='white'
-						onPress={() => console.log('Edit')} />
+						onPress={this.updateItem.bind(this)} />
 
 					<Icon
 						Component={TouchableScale}
@@ -139,6 +172,10 @@ export default class DetailLocationScreen extends Component {
 						color='white'
 						onPress={() => console.log('Share')} />
 				</View>
+				<Toast
+					position='top'
+					ref={this.refToast}
+				/>
 			</View>
 		);
 	}

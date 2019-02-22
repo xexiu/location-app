@@ -9,9 +9,14 @@ import { login } from '../../actions';
 
 const Form = t.form.Form;
 
+/* eslint-disable no-console */
 export default class LoginGuestScreen extends Component {
 	constructor() {
 		super();
+
+		console.ignoredYellowBox = [
+			'Setting a timer'
+		];
 
 		this.refForm = React.createRef();
 		this.refToast = React.createRef();

@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Button } from 'react-native-elements';
 import PropTypes from 'prop-types';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
 function defaultAction(evt) {
 	// eslint-disable-next-line
@@ -12,7 +11,7 @@ export class AppButton extends Component {
 	render() {
 		const {
 			btnTitle = 'No btn title!',
-			btnStyle = { backgroundColor: 'transparent' },
+			btnStyle,
 			btnLoading = false,
 			btnRaised = false,
 			btnType = 'solid',

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, ScrollView } from 'react-native';
+import { View } from 'react-native';
 import { PreLoader, AppButton } from '../../components/common';
 import { MapView, Permissions } from 'expo';
 import { Icon, SearchBar } from 'react-native-elements';
@@ -13,12 +13,12 @@ import {
 	fetchPlaceOrGeoGoogleMaps,
 	fecthAutoCompleteGoogleMaps
 } from '../../utils/google';
+import { buildMarker } from '../../utils/location';
 import { buttonsStyle } from '../../styles/buttonsStyle';
 import { resetStateAndCloseKeyboard } from '../../utils/common';
 import { NavigationActions } from 'react-navigation';
 import LocationList from '../../components/locations/LocationList';
 import LocationListItem from '../../components/locations/LocationListItem';
-import LocationMarker from '../../components/locations/LocationMarker';
 import Toast from 'react-native-easy-toast';
 
 /* eslint-disable no-console, class-methods-use-this, max-nested-callbacks, max-len, camelcase, complexity */
@@ -60,8 +60,9 @@ export default class SaveCurrentLocationScreen extends Component {
 	async componentDidMount() {
 		const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
-		if (status!=='granted') {
+		if (status !== 'granted') {
 			this.setState({ errorMessage: 'Permissions not granted.' });
+			this.refToast.current.show(this.state.errorMessage, 1500);
 		} else {
 			try {
 				const currentPosition = await getCurrentPosition();
@@ -133,7 +134,7 @@ export default class SaveCurrentLocationScreen extends Component {
 				routeName: 'LandingUserScreen'
 			});
 
-			this.refToast.current.show('Location correctly saved!', 1000, () =>{
+			this.refToast.current.show('Location correctly saved!', 1000, () => {
 				this.props.navigation.dispatch(navigateAction);
 			});
 
@@ -221,25 +222,6 @@ export default class SaveCurrentLocationScreen extends Component {
 		);
 	}
 
-	buildMarker(markers) {
-		return markers.map(marker => {
-			const { location } = marker.geometry;
-			const coords = {
-				latitude: location.lat,
-				longitude: location.lng
-			};
-
-			return (
-				<LocationMarker
-					marker={marker}
-					coords={coords}
-					actionOnDragEnd={this.onPressLocation.bind(this)}
-					key={(item, index) => index.toString()}
-				/>
-			);
-		});
-	}
-
 	render() {
 		const {
 			loaded,
@@ -262,6 +244,7 @@ export default class SaveCurrentLocationScreen extends Component {
 						placeholder="Search a location..."
 						onChangeText={this.searchBarGoogleMaps.bind(this)}
 						onClear={() => resetStateAndCloseKeyboard.call(this, { textInput: '', locationResultFromSearch: [] })}
+						autoCorrect={false}
 						value={textInput}
 					/>
 					<LocationList
@@ -288,7 +271,7 @@ export default class SaveCurrentLocationScreen extends Component {
 					onMarkerPress={() => { console.log('Pin pressed'); }}
 					onMapReady={this.onMapReady}
 				>
-					{this.buildMarker(markers)}
+					{buildMarker(markers)}
 				</MapView>
 				<View style={buttonsStyle.saveLocationFooterBtns}>
 					<AppButton
@@ -301,6 +284,7 @@ export default class SaveCurrentLocationScreen extends Component {
 							onPress={() => this.props.navigation.goBack()}
 						/>)}
 						btnTitle=""
+						btnStyle={{ backgroundColor: 'transparent' }}
 					/>
 					<AppButton
 						btnIcon={(<Icon
@@ -312,6 +296,7 @@ export default class SaveCurrentLocationScreen extends Component {
 							onPress={this.saveLocationFromGoogleToDb.bind(this)}
 						/>)}
 						btnTitle=""
+						btnStyle={{ backgroundColor: 'transparent' }}
 					/>
 					<AppButton
 						btnIcon={(<Icon
@@ -323,12 +308,14 @@ export default class SaveCurrentLocationScreen extends Component {
 							onPress={refreshPosition.bind(this)}
 						/>)}
 						btnTitle=""
+						btnStyle={{ backgroundColor: 'transparent' }}
 					/>
 				</View>
 				<Toast
 					textStyle={{ fontWeight: 'bold', color: 'white' }}
 					style={!!errorMessage && { backgroundColor: 'red' }}
 					ref={this.refToast}
+					position='top'
 				/>
 			</View>
 		);
