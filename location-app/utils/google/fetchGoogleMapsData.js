@@ -1,4 +1,4 @@
-import GOOGLE_MAPS_API from '../../constants/Apis';
+import { GOOGLE_MAPS_API } from '../../constants/Apis';
 
 const ROOT_API = 'https://maps.googleapis.com/maps/api/';
 const AUTOCOMPLETE_PLACE = `${ROOT_API}place/autocomplete/json?input=`;
