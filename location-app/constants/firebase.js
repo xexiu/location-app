@@ -1,5 +1,7 @@
+import { FIREBASE_API } from './Apis';
+
 export const firebaseConfig = {
-	apiKey: 'AIzaSyBvKcBUeBfG3yRF5Lc3jv5YJV0rowhaWM4',
+	apiKey: FIREBASE_API,
 	authDomain: 'location-app-ee9f2.firebaseapp.com',
 	databaseURL: 'https://location-app-ee9f2.firebaseio.com',
 	projectId: 'location-app-ee9f2',

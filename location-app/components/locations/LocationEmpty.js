@@ -7,7 +7,7 @@ export default class LocationEmpty extends Component {
 	render() {
 		return (
 			<View>
-				<Text h1> No locations saved! Please give me more time...</Text>
+				<Text> No locations saved! Please give me more time...</Text>
 			</View>
 		);
 	}
