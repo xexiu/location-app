@@ -1,4 +1,4 @@
-import { GOOGLE_MAPS_API } from '../../constants/Apis';
+import { GOOGLE_MAPS_API_KEY } from '../../constants/Apis';
 
 const ROOT_API = 'https://maps.googleapis.com/maps/api/';
 const AUTOCOMPLETE_PLACE = `${ROOT_API}place/autocomplete/json?input=`;
@@ -22,7 +22,7 @@ const castellNr1 = '41.492692697831885,2.026431038977603';
 const montSeny = '41.759480,2.395221';
 
 export function fecthAutoCompleteGoogleMaps(query) {
-	const autocompleteApi = `${AUTOCOMPLETE_PLACE}${query}&key=${GOOGLE_MAPS_API}`;
+	const autocompleteApi = `${AUTOCOMPLETE_PLACE}${query}&key=${GOOGLE_MAPS_API_KEY}`;
 
 	return fetch(autocompleteApi, FETCH_OPTIONS)
 		.then(response => response.json());
@@ -34,12 +34,12 @@ export function fetchData(url, options = FETCH_OPTIONS) {
 }
 
 export async function fetchPlaceDetails(placeId) {
-	return await fetchData(`${DETAILS_PLACE}${placeId}&key=${GOOGLE_MAPS_API}`);
+	return await fetchData(`${DETAILS_PLACE}${placeId}&key=${GOOGLE_MAPS_API_KEY}`);
 }
 
 export async function fetchPlaceOrGeoGoogleMaps(coords) {
-	const placesApi = `${PLACE_SEARCH}${coords}&${RADIUS}&key=${GOOGLE_MAPS_API}`;
-	const geoCodeApi = `${GEOCODE}${coords}&${RADIUS}&key=${GOOGLE_MAPS_API}`;
+	const placesApi = `${PLACE_SEARCH}${coords}&${RADIUS}&key=${GOOGLE_MAPS_API_KEY}`;
+	const geoCodeApi = `${GEOCODE}${coords}&${RADIUS}&key=${GOOGLE_MAPS_API_KEY}`;
 
 	const places = await fetchData(placesApi);
 	const hasGeo = places.results.length >= 1 && GEO_PLACES.indexOf(places.results[0].types[0]) >= 0;

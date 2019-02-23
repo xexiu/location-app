@@ -1,8 +1,12 @@
 import React, { Component } from 'react';
+import { View, Text, Image } from 'react-native';
 import { Marker } from 'react-native-maps';
 import PropTypes from 'prop-types';
+import { GOOGLE_MAPS_API_KEY } from '../../constants/Apis';
 
+const ROOT_API = 'https://maps.googleapis.com/maps/api/';
 /* eslint-disable no-console */
+
 export default class LocationMarker extends Component {
 	render() {
 		const {

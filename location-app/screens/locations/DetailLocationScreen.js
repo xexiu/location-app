@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Alert, Text, Modal, TextInput } from 'react-native';
+import { View, Alert, Text, Modal, TextInput, Image } from 'react-native';
 import { MapView, Permissions } from 'expo';
 import { Icon } from 'react-native-elements';
 import { PreLoader, AppButton } from '../../components/common';
@@ -10,10 +10,15 @@ import * as firebase from 'firebase';
 import { NavigationActions } from 'react-navigation';
 import Toast from 'react-native-easy-toast';
 import { buildMarker } from '../../utils/location';
+import { connect } from 'react-redux';
+import * as actions from '../../actions';
+import { GOOGLE_MAPS_API_KEY } from '../../constants/Apis';
+
+const ROOT_API = 'https://maps.googleapis.com/maps/api/';
 
 /* eslint-disable no-console, class-methods-use-this */
 
-export default class DetailLocationScreen extends Component {
+class DetailLocationScreen extends Component {
 	constructor(props) {
 		super(props);
 
@@ -67,22 +72,22 @@ export default class DetailLocationScreen extends Component {
 
 	updateItem() {
 		this.setState({ isModalVisible: false });
-
 		const { location, user } = this.props.navigation.state.params;
 		const { currentUser } = user;
 		const { locationName } = this.state;
+		const navigateAction = NavigationActions.navigate({
+			routeName: 'LandingUserScreen'
+		});
 
-		firebase.database().ref().child(`Users/${currentUser.uid}/locations/${location.key}`).update({
-			name: locationName
-		}, () => {
-			const navigateAction = NavigationActions.navigate({
-				routeName: 'LandingUserScreen'
-			});
+		this.props.updateItem(location, currentUser, locationName);
 
+		locationName.length >= 3
+			?
 			this.refToast.current.show('Location name updated', 1000, () =>{
 				this.props.navigation.dispatch(navigateAction);
-			});
-		});
+			})
+			:
+			this.refToast.current.show('Location name is too short! Min: 3 letters', 1500);
 	}
 
 	deleteItem() {
@@ -121,12 +126,25 @@ export default class DetailLocationScreen extends Component {
 		this.setState({ locationName: text });
 	}
 
+	_renderItem({ item, index }) {
+		console.log('Item', item);
+
+		return (
+			<View style={{}}>
+				<Text style={{}}>{ item.uri }</Text>
+			</View>
+		);
+	}
+
 	render() {
 		const {
 			loaded,
 			markers,
 			isModalVisible
 		} = this.state;
+
+		const reference = markers[0] && markers[0].photos && markers[0].photos[0].photo_reference;
+		const photo = `${ROOT_API}place/photo?maxwidth=400&photoreference=${reference}&key=${GOOGLE_MAPS_API_KEY}`;
 
 		if (!loaded) {
 			return (<PreLoader />);
@@ -156,6 +174,43 @@ export default class DetailLocationScreen extends Component {
 				>
 					{buildMarker(markers)}
 				</MapView>
+
+
+				<View style={
+					{
+						alignSelf: 'center',
+						justifyContent: 'center',
+						flexDirection: 'row',
+						flexWrap: 'wrap',
+						shadowOffset: { width: 10, height: 10 },
+						shadowColor: 'black',
+						shadowOpacity: 0.2,
+						width: 300,
+						height: 300,
+						bottom: 10,
+						position: 'absolute'
+					}
+				}>
+					<View>
+						<Image
+							style={{ width: 100, height: 300, borderRadius: 4 }}
+							source={{ uri: photo }}
+						/>
+					</View>
+					<View style={{
+						marginTop: 10,
+						paddingLeft: 20,
+						height: 280,
+						width: 200,
+						backgroundColor: 'white'
+					}}>
+						<Text>HELLO</Text>
+						<Text>HELLO</Text>
+					</View>
+				</View>
+
+
+
 				<View>
 					<Modal
 						visible={isModalVisible}
@@ -237,6 +292,15 @@ export default class DetailLocationScreen extends Component {
 	}
 }
 
+function mapStateToProps({ locationUpdated }) {
+	return {
+		locationUpdated: locationUpdated.name
+	};
+}
+
+export default connect(mapStateToProps, actions)(DetailLocationScreen);
+
 DetailLocationScreen.propTypes = {
-	navigation: PropTypes.object
+	navigation: PropTypes.object,
+	updateItem: PropTypes.func
 };

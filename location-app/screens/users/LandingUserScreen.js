@@ -8,6 +8,7 @@ import LocationEmpty from '../../components/locations/LocationEmpty';
 import LocationListItem from '../../components/locations/LocationListItem';
 import { NavigationActions } from 'react-navigation';
 import { isEmpty } from '../../utils/common';
+import { typesIconsMap } from '../../constants/iconTypes';
 
 /* eslint-disable no-console, class-methods-use-this */
 
@@ -38,9 +39,12 @@ export default class LandingUserScreen extends Component {
 	}
 
 	renderItem(location) {
+		const leftIcon = location.types[0];
+
 		return (
 			<LocationListItem
 				title={location.name}
+				leftIcon={{ name: typesIconsMap[leftIcon] }}
 				action={() => this.goToLocationDetailOnMap(location)}
 			/>
 		);
