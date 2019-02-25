@@ -13,6 +13,7 @@ import FavoritesUserScreen from './FavoritesUserScreen';
 import LogoutUserScreen from '../users/LogoutUserScreen';
 import DetailLocationScreen from '../locations/DetailLocationScreen';
 import SaveCurrentLocationScreen from '../locations/SaveCurrentLocationScreen';
+import LocationInfoScreen from '../locations/LocationInfoScreen';
 
 /* eslint-disable max-len */
 
@@ -90,6 +91,9 @@ const landingUserScreenStack = createStackNavigator(
 		},
 		SaveCurrentLocationScreen: {
 			screen: SaveCurrentLocationScreen
+		},
+		LocationInfoScreen: {
+			screen: LocationInfoScreen
 		}
 	},
 	{

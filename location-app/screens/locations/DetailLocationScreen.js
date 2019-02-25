@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { View, Alert, Text, Modal, TextInput, Image } from 'react-native';
+import { View, Alert, Text, Image, TextInput } from 'react-native';
 import { MapView, Permissions } from 'expo';
 import { Icon } from 'react-native-elements';
-import { PreLoader, AppButton } from '../../components/common';
+import { PreLoader, AppButton, TextCard } from '../../components/common';
 import PropTypes from 'prop-types';
 import TouchableScale from 'react-native-touchable-scale';
 import { buttonsStyle } from '../../styles';
@@ -13,6 +13,7 @@ import { buildMarker } from '../../utils/location';
 import { connect } from 'react-redux';
 import * as actions from '../../actions';
 import { GOOGLE_MAPS_API_KEY } from '../../constants/Apis';
+import { CustomModal } from '../../components/common/CustomModal';
 
 const ROOT_API = 'https://maps.googleapis.com/maps/api/';
 const DEFAULT_PHOTO = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAOEAAADhCAMAAAAJbSJIAAAAkFBMVEX////0NzT8YGD0NDH0LyzzIBvzHhnzJCD0Kib0JyP8YmL0Mi/6rKv6tbTzGhX6s7L+8PD7W1v2Y2H1W1n93t7+8vL4j437vr31U1H2Z2X81NT/+Pj5mJf5oJ/+6en8y8r2c3HzAAD0Pjv5pqX1RkT3fHv2b230PDn94eH3g4H1TEn6VVX82dj8zcz4lJL1VVIAPN2UAAAE90lEQVR4nO3ca3eaQBAG4BAuC0JQ6/0StcQkRmn7//9dWYyVuLMGSOoynPf50HN6uh9musPssgJ3dwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAD/T281TIernukw/o/502bvxZ7rutmf283T3HRA32v+5ru+Y1sntpP9/a09SUZbz7FUjreNTIf2LZ78IJ88236fQ/vfXNqB/2Q6vC9bJ3l+tr3dH/r3uf4+Oecokl+mQ/ySxXNsy/SSQ6dzf9bZFi7J+HlhOsz6dpYvc9j2i+nl03jO0LL8153pQOua5BOYKPnddw7FDK0wXpsOtZ5uLCdwf8xPVmn/IPX7/f1lW427poOtI0/QOsgEO/eHbSKb6YmycsQPpsOtbpInmLfPQ0IldZHixHTAVaX/Etxbn2V3THFoOuRqFnKLZvc7nUO5/LLBIa9F4yXbptmHTj8pmV/GeTEddBUTL++i+/L5ZTxOl2KYpZYUdy6l6tQyHXZ5S7mVua+YoGUFS9OBlzUS8iKsnGCW4sh06CXJKUyqXYNHPpdJDLJga8ygnETToZczEXWSywke7fSFOrI4cnwhhH/l31msiQtfE34oxHM0WU+ijSdCzRifw8ZmrSlSd3A+r1gPXM0gDneKS3IOQ/Hx/ujBJVsRi246oCowfF1dDNtZ5LgfRmKuxiMCtx31JL/nULPoGoi4ol5MxO2lxMiU+r+Im7+tGRI9xP9NDqWuWLf5N8K/iFYaaNYAYqho/gExsaNxxpqxv9VJZLCrITJ0dT8yEVcizwwd7WB1/8Ygw7mSYfhHO3iqrImi+ZuaoVJ54Uw7eKZk6FLrSrOo62GlDL3LvU8DqRnqq1Td4cU3jLSu/WXUdqgdqxz229sbRlrXWGmQnm6fslOuWeftprHWoy4X2luiR2XFD5q/WGStRtmYasv0Vbm74NBoqPYR0E9cROrSOb1xrPV0g8vALUFNTU/dlTJ5+GSh3iGGVItUmm62VjB55O1Z3W46U+UG6gcxamMg2jrURSAL/vXjDcZwS5yaapeVxiEm0bK9zfmxmd7YI86h2Ezh8ccnIoF48DjfrVbDhxePPHH0mFyFUkQf+Ia+cDMBfawvWD2pSLSRzzgD00FX0qv++xO5ZjZYV/PDhD5BVjUqVaxTZjUq9dS929UpZFajUqU6ddnVqDQoX6cMa1Sq0E8Fo7W+qHSdugyfLj0q2U+Z1qhUsp8GTGtUKlWnfGtUKlGnjv5InIMS/ZRrHz35tE5dli8iFM2u16nD4fGS60bXJ5HTfb3Ow7UUeffRkyv9tAU1Ko2oJ4Pep7D5zweVou2n7ahRSdNPma/1RT26TkVLalQi65TVOzKfon6GaU+NSsT+1G3BWl+krPv896OXLuq0JWt90cj/8FgCm1ecKvhQp+1Z64sKddqyPnpyPpey/Zb10ZOH09bGa2WNSu/70xb20ZPRsU65nz1dk9dpe2tUevF8j8U7hvV1x63brQEAAAAAwG0t0nX0uFwuH6N1yuETJtXsok0SuyLwpUC48XYTsf2mJyGdesHFVzBsJ/D+NP+d35KWMf3BnTB+NB3a91j9JPOTfjJ89pmw0EyhnMSWdJw0Ib8LFYqkNRfiXTR1hR8WPgAt3w+asnx6Xas3Gc+s/LP68sP61mw8aeex8GqYpumwHe0FAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAmuovfI47w2pZpPEAAAAASUVORK5CYII=';
@@ -137,6 +138,104 @@ class DetailLocationScreen extends Component {
 		);
 	}
 
+	showTypes(markers) {
+		const types = markers[0] && markers[0].types;
+		const defaultTypes = !!types && types.length > 1 ?
+			`${types[0].replace(/_/g, ' ')} / ${types[1].replace(/_/g, ' ')}` :
+			(!!types && types[0].replace(/_/g, ' '));
+
+		return (
+			<TextCard
+				text={defaultTypes}
+				textStyle={[{ textTransform: 'uppercase' }]}
+			/>
+		);
+	}
+
+	showPhoneOrVecinity(markers) {
+		const phoneOrVicinity = markers[0] && (markers[0].international_phone_number || markers[0].vicinity);
+
+		if (phoneOrVicinity) {
+			return (
+				<View style={{
+					borderBottomWidth: 1,
+					borderBottomColor: '#eee',
+					marginRight: 20,
+					paddingBottom: 5
+				}}>
+					<TextCard
+						text={phoneOrVicinity}
+						textStyle={[{ marginTop: 10, fontSize: 14 }]}
+					/>
+				</View>
+			);
+		}
+
+		return null;
+	}
+
+	showLocationName(markers) {
+		const locationName = markers[0] && markers[0].name;
+
+		if (locationName) {
+			return (
+				<TextCard
+					text={locationName}
+					linesEllipsis={2}
+					textStyle={[{ marginTop: 10, fontSize: 18, textTransform: 'uppercase', color: 'black' }]}
+				/>
+			);
+		}
+
+		return null;
+	}
+
+	showRating(markers) {
+		const rating = markers[0] && markers[0].rating;
+
+		if (rating) {
+			return (
+				<TextCard text={`Stars: ${rating} / 5`} />
+			);
+		}
+
+		return null;
+	}
+
+	showReviews(markers) {
+		const reviews = markers[0] && markers[0].user_ratings_total;
+
+		if (reviews) {
+			return (
+				<TextCard text={`${reviews} reviews`} />
+			);
+		}
+
+		return null;
+	}
+
+	showOpenTime(markers) {
+		const open = markers[0] && markers[0].opening_hours && markers[0].opening_hours.open_now;
+		const yesNo = !!open && (open === true ? 'Yes' : 'No');
+
+		if (open === true || open === false) {
+			return (
+				<TextCard text={`Open Now: ${yesNo}`} />
+			);
+		}
+
+		return null;
+	}
+
+	goToLocationInfo(markers) {
+		const navigateAction = NavigationActions.navigate({
+			routeName: 'LocationInfoScreen',
+			params: markers
+		});
+
+		this.props.navigation.dispatch(navigateAction);
+	}
+
 	render() {
 		const {
 			loaded,
@@ -144,14 +243,7 @@ class DetailLocationScreen extends Component {
 			isModalVisible
 		} = this.state;
 
-		const types = markers[0] && markers[0].types;
-		const defaultTypes = !!types && types.length > 1 ? `${types[0]} / ${types[1].replace(/_/g, ' ')}` : (!!types && types[0].replace(/_/g, ' '));
 		const reference = markers[0] && markers[0].photos && markers[0].photos[0].photo_reference;
-		const name = markers[0] && markers[0].name;
-		const phoneOrVicinity = markers[0] && (markers[0].international_phone_number || markers[0].vicinity);
-		const rating = markers[0] && markers[0].rating;
-		const totalRating = markers[0] && markers[0].user_ratings_total;
-		const open = (markers[0] && markers[0].opening_hours && markers[0].opening_hours.open_now) || '';
 		const photo = `${ROOT_API}place/photo?maxwidth=400&photoreference=${reference}&key=${GOOGLE_MAPS_API_KEY}`;
 
 		if (!loaded) {
@@ -213,74 +305,14 @@ class DetailLocationScreen extends Component {
 						paddingLeft: 20,
 						height: 280,
 						width: 200,
-						backgroundColor: 'white',
-						paddingTop: 10
+						backgroundColor: 'white'
 					}}>
-						<Text
-							ellipsizeMode='tail'
-							numberOfLines={1}
-							style={{
-								color: '#ccc',
-								fontSize: 12,
-								fontWeight: 'bold',
-								textTransform: 'uppercase'
-							}}>
-							{defaultTypes}
-						</Text>
-						<Text
-							ellipsizeMode='tail'
-							numberOfLines={2}
-							style={{
-								marginTop: 10,
-								fontSize: 18,
-								fontWeight: 'bold',
-								textTransform: 'uppercase'
-							}}>
-							{name}
-						</Text>
-						<Text
-							ellipsizeMode='tail'
-							numberOfLines={1}
-							style={{
-								marginTop: 10,
-								color: '#ccc',
-								fontSize: 14,
-								fontWeight: 'bold',
-								textTransform: 'uppercase'
-							}}>
-							{phoneOrVicinity}
-						</Text>
-						<Text
-							ellipsizeMode='tail'
-							numberOfLines={1}
-							style={{
-								marginTop: 5,
-								color: '#ccc',
-								fontSize: 12,
-								fontWeight: 'bold',
-								textTransform: 'capitalize'
-							}}>
-							{!!rating ? `Stars: ${rating} / 5` : '' }
-						</Text>
-						<Text ellipsizeMode='tail'
-							numberOfLines={1}
-							style={{
-								marginTop: 5,
-								color: '#ccc',
-								fontSize: 12,
-								fontWeight: 'bold',
-								textTransform: 'capitalize'
-							}}>
-							{!!totalRating ? `${totalRating} reviews` : '' }
-						</Text>
-						<Text style={{
-							marginTop: 5,
-							color: '#ccc',
-							fontSize: 12,
-							fontWeight: 'bold'
-						}}>
-							{!!open ? 'Open Now: Yes' : 'Open Now: No'}
-						</Text>
+						{this.showTypes(markers)}
+						{this.showLocationName(markers)}
+						{this.showPhoneOrVecinity(markers)}
+						{this.showRating(markers)}
+						{this.showReviews(markers)}
+						{this.showOpenTime(markers)}
 						<View>
 							<AppButton
 								btnIcon={(<Icon
@@ -289,13 +321,12 @@ class DetailLocationScreen extends Component {
 									name='info'
 									type='font-awesome'
 									color='#f50'
-									onPress={() => console.log('InfoDetailLocation')}
+									onPress={this.goToLocationInfo.bind(this, markers)}
 								/>)}
 								btnTitle="Infos"
 								btnStyle={{ backgroundColor: 'transparent' }}
 							/>
 						</View>
-
 						<View style={buttonsStyle.detailLocationBtns}>
 							<Icon
 								Component={TouchableScale}
@@ -325,54 +356,34 @@ class DetailLocationScreen extends Component {
 
 					</View>
 				</View>
-
-
-
 				<View>
-					<Modal
-						visible={isModalVisible}
-						transparent={true}
-						animationType="slide"
-					>
-						<View style={{
-							backgroundColor: 'rgba(31, 15, 12, 0.6)',
-							flex: 1,
-							justifyContent: 'center',
-							alignItems: 'center'
-						}}>
-							<Text
-								style={
-									{
-										color: 'white',
-										fontSize: 20,
-										fontWeight: 'bold'
-									}
-								}
-							>Enter a name for this location!</Text>
-							<TextInput
-								style={{
-									backgroundColor: 'white',
-									padding: 4,
-									height: 40,
-									width: 190,
-									marginTop: 5,
-									marginBottom: 5,
-									borderRadius: 5
-								}}
-								underlineColorAndroid="transparent"
-								placeholderTextColor="#9a73ef"
-								autoCapitalize="none"
-								onChangeText={this.handleLocationName.bind(this)}
-								onSubmitEditing={this.updateItem.bind(this)}
-							/>
+					<CustomModal isVisible={isModalVisible}>
+						<Text style={{ color: 'white', fontSize: 20, fontWeight: 'bold' }}
+						>Enter a name for this location!</Text>
+						<TextInput
+							style={{
+								backgroundColor: 'white',
+								padding: 4,
+								height: 40,
+								width: 190,
+								marginTop: 5,
+								marginBottom: 5,
+								borderRadius: 5
+							}}
+							autoCorrect={false}
+							underlineColorAndroid="transparent"
+							placeholderTextColor="#9a73ef"
+							autoCapitalize="none"
+							onChangeText={this.handleLocationName.bind(this)}
+							onSubmitEditing={this.updateItem.bind(this)}
+						/>
 
-							<AppButton
-								btnTitle="Cancel"
-								btnStyle={buttonsStyle.buttonsLoginStyle}
-								btnOnPress={() => this.setState({ isModalVisible: false })}
-							/>
-						</View>
-					</Modal>
+						<AppButton
+							btnTitle="Cancel"
+							btnStyle={buttonsStyle.buttonsLoginStyle}
+							btnOnPress={() => this.setState({ isModalVisible: false })}
+						/>
+					</CustomModal>
 				</View>
 				<Toast
 					position='top'
