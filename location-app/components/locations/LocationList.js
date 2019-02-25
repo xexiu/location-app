@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, FlatList, ScrollView } from 'react-native';
+import { FlatList, ScrollView } from 'react-native';
 import { Footer } from '../common';
 import PropTypes from 'prop-types';
 
