@@ -7,5 +7,7 @@ export const typesIconsMap = {
 	train_station: 'train',
 	street_address: 'streetview',
 	route: 'pin-drop',
-	restaurant: 'restaurant'
+	restaurant: 'restaurant',
+	university: 'local-library',
+	point_of_interest: 'control-point'
 };

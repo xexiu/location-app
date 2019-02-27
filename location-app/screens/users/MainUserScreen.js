@@ -72,6 +72,34 @@ function getDrawerIcon(iconName, tintColor) {
 	);
 }
 
+const MainNavigationStacks = createStackNavigator(
+	{
+		DetailLocationScreen: {
+			screen: DetailLocationScreen,
+			navigationOptions: ({ navigation }) => ({
+				title: 'Location',
+				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen')),
+				headerLeft: buildIcon('arrow-left', headerButtons.btnLeftStyle, 30, 'white', () => { navigation.goBack(null); })
+			})
+		},
+		SaveCurrentLocationScreen: {
+			screen: SaveCurrentLocationScreen
+		},
+		FavoritesUserScreen: {
+			screen: FavoritesUserScreen,
+			navigationOptions: ({ navigation }) => ({
+				title: 'Favorite Locations',
+				headerRight: buildIcon('location-arrow', [headerButtons.btnRightStyle], 30, 'white', navigateTo(navigation, 'SaveCurrentLocationScreen')),
+				headerLeft: buildIcon('bars', headerButtons.btnLeftStyle, 30, 'white', openSideBar(navigation))
+			})
+		},
+		LocationInfoScreen: {
+			screen: LocationInfoScreen
+		}
+	},
+	navigationOptions
+);
+
 const landingUserScreenStack = createStackNavigator(
 	{
 		LandingUserScreen: {
@@ -81,19 +109,6 @@ const landingUserScreenStack = createStackNavigator(
 				headerRight: buildIcon('location-arrow', [headerButtons.btnRightStyle], 30, 'white', navigateTo(navigation, 'SaveCurrentLocationScreen')),
 				headerLeft: buildIcon('bars', headerButtons.btnLeftStyle, 30, 'white', openSideBar(navigation))
 			})
-		},
-		DetailLocationScreen: {
-			screen: DetailLocationScreen,
-			navigationOptions: ({ navigation }) => ({
-				title: 'Location on Map',
-				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen'))
-			})
-		},
-		SaveCurrentLocationScreen: {
-			screen: SaveCurrentLocationScreen
-		},
-		LocationInfoScreen: {
-			screen: LocationInfoScreen
 		}
 	},
 	{
@@ -142,7 +157,7 @@ const SideBar = createDrawerNavigator(
 		LandingUserScreen: {
 			screen: landingUserScreenStack,
 			navigationOptions: {
-				drawerLabel: 'Locations', // side bar item name
+				title: 'Locations', // side bar item name
 				drawerIcon: ({ tintColor }) => (getDrawerIcon('home', tintColor))
 			}
 		},
@@ -175,4 +190,19 @@ const SideBar = createDrawerNavigator(
 	}
 );
 
-export default createAppContainer(SideBar);
+const AppScreen = createStackNavigator(
+	{
+		SideBar: {
+			screen: SideBar
+		},
+		MainNavigationStacks: {
+			screen: MainNavigationStacks
+		}
+	},
+	{
+		//mode: 'modal',
+		headerMode: 'none'
+	}
+);
+
+export default createAppContainer(AppScreen);

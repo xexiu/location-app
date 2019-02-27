@@ -15,7 +15,10 @@ import {
 } from '../../utils/google';
 import { buildMarker } from '../../utils/location';
 import { buttonsStyle } from '../../styles/buttonsStyle';
-import { resetStateAndCloseKeyboard } from '../../utils/common';
+import {
+	resetStateAndCloseKeyboard,
+	getCurrentFullDate
+} from '../../utils/common';
 import { NavigationActions } from 'react-navigation';
 import LocationList from '../../components/locations/LocationList';
 import LocationListItem from '../../components/locations/LocationListItem';
@@ -127,7 +130,13 @@ export default class SaveCurrentLocationScreen extends Component {
 
 		const data = {};
 
+		location[0]['firstVisited'] = getCurrentFullDate();
+		location[0]['key'] = key;
+		location[0]['isFavorite'] = false;
+
 		data[`Users/${currentUser.uid}/locations/${key}`] = location[0];
+
+		//console.log('Data', data[`Users/${currentUser.uid}/locations/${key}`]);
 
 		return firebase.database().ref().update(data).then(() => {
 			const navigateAction = NavigationActions.navigate({
@@ -281,7 +290,7 @@ export default class SaveCurrentLocationScreen extends Component {
 							name='arrow-left'
 							type='font-awesome'
 							color='#f50'
-							onPress={() => this.props.navigation.goBack()}
+							onPress={() => this.props.navigation.navigate('LandingUserScreen')}
 						/>)}
 						btnTitle=""
 						btnStyle={{ backgroundColor: 'transparent' }}

@@ -51,18 +51,22 @@ class DetailLocationScreen extends Component {
 		const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
 		if (status === 'granted') {
-			const { location } = this.props.navigation.state.params;
+			const navigationState = this.props.navigation.state;
 
-			this._isMounted && this.setState({
-				loaded: true,
-				markers: [location]
-			});
+			if (navigationState && navigationState.params) {
+				const { location } = navigationState.params;
 
-			this._isMounted && this.map.animateToRegion({
-				...this.state.region,
-				latitude: location.geometry.location.lat,
-				longitude: location.geometry.location.lng
-			});
+				this._isMounted && this.setState({
+					loaded: true,
+					markers: [location]
+				});
+
+				this._isMounted && this.map.animateToRegion({
+					...this.state.region,
+					latitude: location.geometry.location.lat,
+					longitude: location.geometry.location.lng
+				});
+			}
 		}
 	}
 
@@ -160,7 +164,6 @@ class DetailLocationScreen extends Component {
 				<View style={{
 					borderBottomWidth: 1,
 					borderBottomColor: '#eee',
-					marginRight: 20,
 					paddingBottom: 5
 				}}>
 					<TextCard
@@ -195,7 +198,7 @@ class DetailLocationScreen extends Component {
 
 		if (rating) {
 			return (
-				<TextCard text={`Stars: ${rating} / 5`} />
+				<TextCard text={`Rate: ${rating} out of 5`} />
 			);
 		}
 
@@ -302,7 +305,8 @@ class DetailLocationScreen extends Component {
 					</View>
 					<View style={{
 						marginTop: 10,
-						paddingLeft: 20,
+						paddingLeft: 10,
+						paddingRight: 10,
 						height: 280,
 						width: 200,
 						backgroundColor: 'white'
@@ -315,16 +319,9 @@ class DetailLocationScreen extends Component {
 						{this.showOpenTime(markers)}
 						<View>
 							<AppButton
-								btnIcon={(<Icon
-									Component={TouchableScale}
-									raised
-									name='info'
-									type='font-awesome'
-									color='#f50'
-									onPress={this.goToLocationInfo.bind(this, markers)}
-								/>)}
-								btnTitle="Infos"
-								btnStyle={{ backgroundColor: 'transparent' }}
+								btnTitle="More Info"
+								btnStyle={{ marginTop: 5 }}
+								btnOnPress={this.goToLocationInfo.bind(this, markers)}
 							/>
 						</View>
 						<View style={buttonsStyle.detailLocationBtns}>

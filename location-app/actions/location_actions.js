@@ -11,7 +11,6 @@ export function updateItem(location, currentUser, locationName) {
 			firebase.database().ref().child(`Users/${currentUser.uid}/locations/${location.key}`).update({
 				name: locationName
 			}, () => {
-
 				dispatch({
 					payload: locationName,
 					type: LOCATION_UPDATED_NAME_SUCCESS

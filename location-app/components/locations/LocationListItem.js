@@ -13,7 +13,11 @@ function defaultFun() {
 export default class LocationListItem extends Component {
 	render() {
 		const {
+			withBadgeIcon,
 			title,
+			titleStyle = { fontSize: 15 },
+			subtitleStyle,
+			subtitle,
 			action = defaultFun,
 			leftIcon = { name: 'pin-drop' },
 			rightIcon = { name: 'arrow-forward', type: 'font-awsome' }
@@ -22,10 +26,13 @@ export default class LocationListItem extends Component {
 		return (
 			<View>
 				<ListItem
-					containerStyle={{ borderBottomWidth: 1, borderColor: '#f2f2f2' }}
+					badge={withBadgeIcon}
+					bottomDivider
 					Component={TouchableScale}
-					titleStyle={ { fontSize: 15 }}
 					title={title}
+					titleStyle={titleStyle}
+					subtitle={subtitle}
+					subtitleStyle={subtitleStyle}
 					leftIcon={leftIcon}
 					onPress={action}
 					rightIcon={rightIcon}
@@ -37,8 +44,12 @@ export default class LocationListItem extends Component {
 }
 
 LocationListItem.propTypes = {
+	withBadgeIcon: PropTypes.object,
 	action: PropTypes.func,
 	title: PropTypes.string,
+	titleStyle: PropTypes.object,
+	subtitle: PropTypes.string,
+	subtitleStyle: PropTypes.object,
 	leftIcon: PropTypes.object,
 	rightIcon: PropTypes.object
 };
