@@ -9,5 +9,6 @@ export const typesIconsMap = {
 	route: 'pin-drop',
 	restaurant: 'restaurant',
 	university: 'local-library',
-	point_of_interest: 'control-point'
+	point_of_interest: 'control-point',
+	health: 'mood'
 };

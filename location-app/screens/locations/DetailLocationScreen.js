@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { View, Alert, Text, Image, TextInput } from 'react-native';
-import { MapView, Permissions } from 'expo';
+import { MapView } from 'expo';
 import { Icon } from 'react-native-elements';
 import { PreLoader, AppButton, TextCard } from '../../components/common';
 import PropTypes from 'prop-types';
@@ -26,6 +26,7 @@ class DetailLocationScreen extends Component {
 
 		this._isMounted = false;
 		this.refToast = React.createRef();
+		this.map = React.createRef();
 		this.state = {
 			isModalVisible: false,
 			locationName: '',
@@ -48,25 +49,22 @@ class DetailLocationScreen extends Component {
 
 	async componentDidMount() {
 		this._isMounted = true;
-		const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
-		if (status === 'granted') {
-			const navigationState = this.props.navigation.state;
+		const navigationState = this.props.navigation.state;
 
-			if (navigationState && navigationState.params) {
-				const { location } = navigationState.params;
+		if (navigationState && navigationState.params) {
+			const { location } = navigationState.params;
 
-				this._isMounted && this.setState({
-					loaded: true,
-					markers: [location]
-				});
-
-				this._isMounted && this.map.animateToRegion({
-					...this.state.region,
+			this._isMounted && this.setState({
+				loaded: true,
+				markers: [location],
+				region: {
 					latitude: location.geometry.location.lat,
-					longitude: location.geometry.location.lng
-				});
-			}
+					longitude: location.geometry.location.lng,
+					longitudeDelta: 0.01,
+					latitudeDelta: 0.01
+				}
+			});
 		}
 	}
 
@@ -257,7 +255,7 @@ class DetailLocationScreen extends Component {
 			<View style={{ flex: 1, position: 'relative' }}>
 				<MapView
 					initialRegion={this.state.region}
-					ref={ref => { this.map = ref; }}
+					ref={this.map}
 					style={{ flex: 1 }}
 					mapType="standard"
 					zoomEnabled

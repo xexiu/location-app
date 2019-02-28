@@ -15,6 +15,8 @@ import DetailLocationScreen from '../locations/DetailLocationScreen';
 import SaveCurrentLocationScreen from '../locations/SaveCurrentLocationScreen';
 import LocationInfoScreen from '../locations/LocationInfoScreen';
 
+let currentUserPosition;
+
 /* eslint-disable max-len */
 
 const { headerButtons } = buttonsStyle;
@@ -34,6 +36,14 @@ const navigationOptions = {
 	}
 };
 
+async function catchErrLocation() {
+	const userPosition = await getCurrentPosition();
+
+	currentUserPosition = userPosition;
+
+	return userPosition;
+}
+
 function openSideBar(navigation) {
 	return function() {
 		return navigation.openDrawer();
@@ -41,16 +51,10 @@ function openSideBar(navigation) {
 }
 
 function navigateTo(navigation, screenName) {
-	let coords;
-
-	getCurrentPosition().then(data => {
-		coords = data;
-	});
-
 	return function() {
 		return navigation.navigate(screenName, {
 			user: firebase.auth(),
-			currentPosition: coords
+			currentPosition: currentUserPosition
 		});
 	};
 }
@@ -79,7 +83,7 @@ const MainNavigationStacks = createStackNavigator(
 			navigationOptions: ({ navigation }) => ({
 				title: 'Location',
 				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen')),
-				headerLeft: buildIcon('arrow-left', headerButtons.btnLeftStyle, 30, 'white', () => { navigation.goBack(null); })
+				headerLeft: buildIcon('long-arrow-left', headerButtons.btnLeftStyle, 30, 'white', () => { navigation.goBack(null); })
 			})
 		},
 		SaveCurrentLocationScreen: {
@@ -113,6 +117,7 @@ const landingUserScreenStack = createStackNavigator(
 	},
 	{
 		initialRouteName: 'LandingUserScreen', // Must be the same as the Route Name from above
+		initialRouteParams: catchErrLocation(),
 		defaultNavigationOptions: {
 			headerStyle: {
 				backgroundColor: '#f4511e'

@@ -1,15 +1,20 @@
 import React, { Component } from 'react';
-import { View } from 'react-native';
+import { View, Text, NetInfo } from 'react-native';
+import { Permissions } from 'expo';
 import { Icon } from 'react-native-elements';
 import TouchableScale from 'react-native-touchable-scale';
 import * as firebase from 'firebase';
-import { PreLoader } from '../../components/common';
+import { PreLoader, OfflineNotice } from '../../components/common';
 import LocationList from '../../components/locations/LocationList';
 import LocationListItem from '../../components/locations/LocationListItem';
 import PropTypes from 'prop-types';
 import LocationEmpty from '../../components/locations/LocationEmpty';
 import { isEmpty } from '../../utils/common';
-import { loadDataFromDb, goToLocationDetail } from '../../utils/location';
+import {
+	loadDataFromDb,
+	goToLocationDetail,
+	locationEnabler
+} from '../../utils/location';
 import { typesIconsMap } from '../../constants/iconTypes';
 import Toast from 'react-native-easy-toast';
 
@@ -34,10 +39,20 @@ export default class LandingUserScreen extends Component {
 		this._isMounted = false;
 		this.refLocations = firebase.database().ref().child(`Users/${currentUser.uid}/locations`);
 		this.state = {
+			isConnected: true,
 			locations: [],
 			userName: '',
-			loaded: false
+			loaded: false,
+			errorMessage: ''
 		};
+	}
+
+	handleConnectivityChange(isConnected) {
+		if (isConnected) {
+			return this.setState({ isConnected });
+		}
+
+		return this.setState({ isConnected });
 	}
 
 	renderItem(location) {
@@ -67,12 +82,30 @@ export default class LandingUserScreen extends Component {
 
 	componentWillUnmount() {
 		this._isMounted = false;
+		NetInfo.isConnected
+			.removeEventListener('connectionChange', this.handleConnectivityChange.bind(this));
 	}
 
-	componentDidMount() {
-		this._isMounted = true;
+	async componentDidMount() {
+		const params = this.props.navigation.state.params;
+		const errorLocation = String(Object.values(params)).indexOf('Error') >= 0;
 
-		this._isMounted && loadDataFromDb.call(this, this.refLocations, this.state, 'locations');
+		NetInfo.isConnected
+			.addEventListener('connectionChange', this.handleConnectivityChange.bind(this));
+
+		if (errorLocation) {
+			locationEnabler.call(this);
+		} else {
+			const { status } = await Permissions.askAsync(Permissions.LOCATION);
+
+			if (status === 'granted') {
+				this._isMounted = true;
+
+				this._isMounted && loadDataFromDb.call(this, this.refLocations, this.state, 'locations');
+			} else {
+				this.setState({ errorMessage: 'We found an error with permissons.' });
+			}
+		}
 	}
 
 	addToFavoritesLocation(location) {
@@ -98,8 +131,24 @@ export default class LandingUserScreen extends Component {
 	render() {
 		const {
 			loaded,
-			locations
+			locations,
+			errorMessage,
+			isConnected
 		} = this.state;
+
+		if (!isConnected) {
+			return (<OfflineNotice />);
+		}
+
+
+
+		if (!!errorMessage) {
+			return (
+				<View>
+					<Text>Error: {errorMessage}</Text>
+				</View>
+			);
+		}
 
 		if (!loaded) {
 			return (<PreLoader />);
