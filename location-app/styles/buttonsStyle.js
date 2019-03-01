@@ -49,7 +49,7 @@ export const buttonsStyle = {
 		bottom: 2,
 		shadowColor: 'rgba(0, 0, 0, 0.2)',
 		shadowOffset: { width: 0, height: 1 },
-		shadowRadius: 3,
+		shadowRadius: 1,
 		shadowOpacity: 1
 	},
 	saveLocationFooterBtns: {

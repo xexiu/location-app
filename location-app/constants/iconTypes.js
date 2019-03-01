@@ -10,5 +10,6 @@ export const typesIconsMap = {
 	restaurant: 'restaurant',
 	university: 'local-library',
 	point_of_interest: 'control-point',
-	health: 'mood'
+	health: 'mood',
+	store: 'store'
 };

@@ -13,11 +13,16 @@ import {
 	fecthAutoCompleteGoogleMaps,
 	getCurrentPosition
 } from '../../utils/google';
-import { buildMarker, locationEnabler } from '../../utils/location';
+import {
+	buildMarker,
+	locationEnabler,
+	buildData
+} from '../../utils/location';
 import { buttonsStyle } from '../../styles/buttonsStyle';
 import {
 	resetStateAndCloseKeyboard,
-	getCurrentFullDate
+	getCurrentFullDate,
+	concat
 } from '../../utils/common';
 import { NavigationActions } from 'react-navigation';
 import LocationList from '../../components/locations/LocationList';
@@ -34,6 +39,7 @@ export default class SaveCurrentLocationScreen extends Component {
 		super(props);
 
 		this.user = this.props.navigation.state.params.user;
+		this.currentUser = this.user.currentUser;
 		this.currentPosition = this.props.navigation.state.params.currentPosition;
 		this.refToast = React.createRef();
 
@@ -43,12 +49,11 @@ export default class SaveCurrentLocationScreen extends Component {
 			textInput: '',
 			location: null,
 			map: null,
-			user: this.user,
 			currentPosition: this.currentPosition,
 			ready: true,
 			markers: [],
 			loaded: false,
-			errorMessage: '',
+			locationDuplicatedErrMsg: '',
 			region: {
 				longitude: 41.38270290,
 				latitude: 2.1427772,
@@ -126,16 +131,33 @@ export default class SaveCurrentLocationScreen extends Component {
 		}
 	};
 
+	getTags(location) {
+		const seenTags = [];
+
+		if (location && location.address_components) {
+			const tagsFromAddress = location.address_components;
+			const tagsFromTypes = location.types;
+			const tags = concat(tagsFromAddress, tagsFromTypes);
+
+			tags.forEach(tag => {
+				if ((tag && tag.long_name && tag.long_name.length > 3) || tag.length > 3) {
+					seenTags.push(tag.long_name || tag);
+				}
+			});
+
+			return seenTags;
+		}
+
+		return seenTags;
+	}
+
 	addDataToDb(currentUser, location, key) {
-		this.setState({ errorMessage: '' });
-
-		const data = {};
-
 		location[0]['firstVisited'] = getCurrentFullDate();
 		location[0]['key'] = key;
 		location[0]['isFavorite'] = false;
+		location[0]['tags'] = this.getTags(location[0]);
 
-		data[`Users/${currentUser.uid}/locations/${key}`] = location[0];
+		const data = buildData(currentUser, location[0], 'locations');
 
 		return firebase.database().ref().update(data).then(() => {
 			const navigateAction = NavigationActions.navigate({
@@ -150,19 +172,20 @@ export default class SaveCurrentLocationScreen extends Component {
 	}
 
 	saveLocationFromGoogleToDb() {
-		const { location, user } = this.state;
-		const { currentUser } = user;
-		const refLocations = firebase.database().ref().child(`Users/${currentUser.uid}/locations`);
+		const { location } = this.state;
+		const refLocations = firebase.database().ref().child(`Users/${this.currentUser.uid}/locations`);
 		const key = refLocations.push().key;
 		const placesIdDuplicated = this.hasDuplicatedLocationsDb(refLocations, location);
 
 		if (placesIdDuplicated) {
-			this.setState({ errorMessage: 'Duplicated location!' });
+			this.setState({ locationDuplicatedErrMsg: 'Duplicated location!' });
 
 			return this.refToast.current.show('Duplicated location!', 1000);
 		}
 
-		return this.addDataToDb(currentUser, location, key);
+		this.setState({ locationDuplicatedErrMsg: '' });
+
+		return this.addDataToDb(this.currentUser, location, key);
 	}
 
 	async onPressLocation(evt) {
@@ -237,7 +260,7 @@ export default class SaveCurrentLocationScreen extends Component {
 			locationResultFromSearch,
 			region,
 			markers,
-			errorMessage
+			locationDuplicatedErrMsg
 		} = this.state;
 
 		if (!loaded) {
@@ -321,7 +344,7 @@ export default class SaveCurrentLocationScreen extends Component {
 				</View>
 				<Toast
 					textStyle={{ fontWeight: 'bold', color: 'white' }}
-					style={!!errorMessage && { backgroundColor: 'red' }}
+					style={!!locationDuplicatedErrMsg && { backgroundColor: 'red' }}
 					ref={this.refToast}
 					position='top'
 				/>

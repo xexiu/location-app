@@ -1,7 +1,11 @@
 import React, { Component } from 'react';
 import * as firebase from 'firebase';
 import { View } from 'react-native';
-import { loadDataFromDb, goToLocationDetail } from '../../utils/location';
+import {
+	loadDataFromDb,
+	goToLocationDetail,
+	buildData
+} from '../../utils/location';
 import { isEmpty } from '../../utils/common';
 import { PreLoader } from '../../components/common';
 import LocationEmpty from '../../components/locations/LocationEmpty';
@@ -12,7 +16,7 @@ import { Icon } from 'react-native-elements';
 import TouchableScale from 'react-native-touchable-scale';
 import { typesIconsMap } from '../../constants/iconTypes';
 
-/* eslint-disable class-methods-use-this, no-console */
+/* eslint-disable class-methods-use-this, no-console, max-len */
 
 const styles = {
 	itemSubTitle: {
@@ -27,11 +31,12 @@ const styles = {
 export default class FavoritesUserScreen extends Component {
 	constructor() {
 		super();
-		const { currentUser } = firebase.auth();
 
+		this.user = firebase.auth();
+		this.currentUser = this.user.currentUser;
 		this._isMounted = false;
 		this.refToast = React.createRef();
-		this.refFavorites = firebase.database().ref().child(`Users/${currentUser.uid}/favorites`);
+		this.refFavorites = firebase.database().ref().child(`Users/${this.currentUser.uid}/favorites`);
 		this.state = {
 			favoriteLocations: [],
 			userName: '',
@@ -50,18 +55,13 @@ export default class FavoritesUserScreen extends Component {
 	}
 
 	removeFromFavorites(favoriteLocation) {
-		const user = firebase.auth();
-		const { currentUser } = user;
-
-		const data = {};
-
 		favoriteLocation.isFavorite = false;
 
-		data[`Users/${currentUser.uid}/locations/${favoriteLocation.key}`] = favoriteLocation;
+		const data = buildData(this.currentUser, favoriteLocation, 'locations');
 
 		firebase.database().ref().update(data)
 			.then(() => {
-				firebase.database().ref().child(`Users/${currentUser.uid}/favorites/${favoriteLocation.key}`).remove()
+				firebase.database().ref().child(`Users/${this.currentUser.uid}/favorites/${favoriteLocation.key}`).remove()
 					.then(() => {
 						this.refToast.current.show('Favorite location removed.', 1000);
 					});

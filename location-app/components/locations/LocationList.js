@@ -20,11 +20,12 @@ export default class LocationList extends Component {
 		return (
 			<ScrollView keyboardShouldPersistTaps="always">
 				<FlatList
+					inverted
 					keyboardShouldPersistTaps="always"
 					data={itemsList}
 					renderItem={item => action(item.item)}
 					keyExtractor={(item, index) => index.toString()}
-					ListFooterComponent={hasFooter ? <Footer /> : ''}
+					ListHeaderComponent={hasFooter ? <Footer /> : ''}
 				/>
 			</ScrollView>
 		);

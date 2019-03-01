@@ -13,7 +13,8 @@ import { isEmpty } from '../../utils/common';
 import {
 	loadDataFromDb,
 	goToLocationDetail,
-	locationEnabler
+	locationEnabler,
+	buildData
 } from '../../utils/location';
 import { typesIconsMap } from '../../constants/iconTypes';
 import Toast from 'react-native-easy-toast';
@@ -33,11 +34,12 @@ const styles = {
 export default class LandingUserScreen extends Component {
 	constructor(props) {
 		super(props);
-		const { currentUser } = firebase.auth();
 
+		this.user = firebase.auth();
+		this.currentUser = this.user.currentUser;
 		this.refToast = React.createRef();
 		this._isMounted = false;
-		this.refLocations = firebase.database().ref().child(`Users/${currentUser.uid}/locations`);
+		this.refLocations = firebase.database().ref().child(`Users/${this.currentUser.uid}/locations`);
 		this.state = {
 			isConnected: true,
 			locations: [],
@@ -109,18 +111,13 @@ export default class LandingUserScreen extends Component {
 	}
 
 	addToFavoritesLocation(location) {
-		const user = firebase.auth();
-		const { currentUser } = user;
-
-		const data = {};
-
 		location.isFavorite = true;
 
-		data[`Users/${currentUser.uid}/favorites/${location.key}`] = location;
+		const data = buildData(this.currentUser, location, 'favorites');
 
 		firebase.database().ref().update(data)
 			.then(() => {
-				firebase.database().ref().child(`Users/${currentUser.uid}/locations/${location.key}`).remove()
+				firebase.database().ref().child(`Users/${this.currentUser.uid}/locations/${location.key}`).remove()
 					.then(() => {
 						this.refToast.current.show('Location marked as favorite.', 1000);
 					});
