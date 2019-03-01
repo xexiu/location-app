@@ -39,15 +39,18 @@ export const buttonsStyle = {
 	detailLocationBtns: {
 		alignSelf: 'center',
 		justifyContent: 'space-between',
-		width: 150,
+		width: 180,
 		flexDirection: 'row',
 		flexWrap: 'wrap',
-		bottom: 20,
 		padding: 10,
 		height: 50,
+		marginRight: 20,
 		position: 'absolute',
-		backgroundColor: 'rgba(33, 33, 34, 0.6)',
-		borderRadius: 40
+		bottom: 2,
+		shadowColor: 'rgba(0, 0, 0, 0.2)',
+		shadowOffset: { width: 0, height: 1 },
+		shadowRadius: 1,
+		shadowOpacity: 1
 	},
 	saveLocationFooterBtns: {
 		alignSelf: 'center',

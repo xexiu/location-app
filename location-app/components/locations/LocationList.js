@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, FlatList, ScrollView } from 'react-native';
+import { FlatList, ScrollView } from 'react-native';
 import { Footer } from '../common';
 import PropTypes from 'prop-types';
 
@@ -20,11 +20,12 @@ export default class LocationList extends Component {
 		return (
 			<ScrollView keyboardShouldPersistTaps="always">
 				<FlatList
+					inverted
 					keyboardShouldPersistTaps="always"
 					data={itemsList}
 					renderItem={item => action(item.item)}
 					keyExtractor={(item, index) => index.toString()}
-					ListFooterComponent={hasFooter ? <Footer /> : ''}
+					ListHeaderComponent={hasFooter ? <Footer /> : ''}
 				/>
 			</ScrollView>
 		);

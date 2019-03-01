@@ -3,6 +3,7 @@ import { Marker } from 'react-native-maps';
 import PropTypes from 'prop-types';
 
 /* eslint-disable no-console */
+
 export default class LocationMarker extends Component {
 	render() {
 		const {

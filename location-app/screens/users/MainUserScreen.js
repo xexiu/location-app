@@ -10,9 +10,21 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { buttonsStyle } from '../../styles';
 import LandingUserScreen from './LandingUserScreen';
 import FavoritesUserScreen from './FavoritesUserScreen';
+import CategoriesUserScreen from './CategoriesUserScreen';
+import ProfileUserScreen from './ProfileUserScreen';
+import SettingsUserScreen from './SettingsUserScreen';
 import LogoutUserScreen from '../users/LogoutUserScreen';
 import DetailLocationScreen from '../locations/DetailLocationScreen';
 import SaveCurrentLocationScreen from '../locations/SaveCurrentLocationScreen';
+import LocationInfoScreen from '../locations/LocationInfoScreen';
+
+/*
+	* TODO:
+	- SettingsUserScreen
+	- ProfileUserScreen
+*/
+
+let currentUserPosition;
 
 /* eslint-disable max-len */
 
@@ -33,6 +45,14 @@ const navigationOptions = {
 	}
 };
 
+async function catchErrLocation() {
+	const userPosition = await getCurrentPosition();
+
+	currentUserPosition = userPosition;
+
+	return userPosition;
+}
+
 function openSideBar(navigation) {
 	return function() {
 		return navigation.openDrawer();
@@ -40,16 +60,10 @@ function openSideBar(navigation) {
 }
 
 function navigateTo(navigation, screenName) {
-	let coords;
-
-	getCurrentPosition().then(data => {
-		coords = data;
-	});
-
 	return function() {
 		return navigation.navigate(screenName, {
 			user: firebase.auth(),
-			currentPosition: coords
+			currentPosition: currentUserPosition
 		});
 	};
 }
@@ -71,6 +85,34 @@ function getDrawerIcon(iconName, tintColor) {
 	);
 }
 
+const MainNavigationStacks = createStackNavigator(
+	{
+		DetailLocationScreen: {
+			screen: DetailLocationScreen,
+			navigationOptions: ({ navigation }) => ({
+				title: 'Location',
+				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen')),
+				headerLeft: buildIcon('long-arrow-left', headerButtons.btnLeftStyle, 30, 'white', () => { navigation.goBack(null); })
+			})
+		},
+		SaveCurrentLocationScreen: {
+			screen: SaveCurrentLocationScreen
+		},
+		FavoritesUserScreen: {
+			screen: FavoritesUserScreen,
+			navigationOptions: ({ navigation }) => ({
+				title: 'Favorite Locations',
+				headerRight: buildIcon('location-arrow', [headerButtons.btnRightStyle], 30, 'white', navigateTo(navigation, 'SaveCurrentLocationScreen')),
+				headerLeft: buildIcon('bars', headerButtons.btnLeftStyle, 30, 'white', openSideBar(navigation))
+			})
+		},
+		LocationInfoScreen: {
+			screen: LocationInfoScreen
+		}
+	},
+	navigationOptions
+);
+
 const landingUserScreenStack = createStackNavigator(
 	{
 		LandingUserScreen: {
@@ -80,20 +122,11 @@ const landingUserScreenStack = createStackNavigator(
 				headerRight: buildIcon('location-arrow', [headerButtons.btnRightStyle], 30, 'white', navigateTo(navigation, 'SaveCurrentLocationScreen')),
 				headerLeft: buildIcon('bars', headerButtons.btnLeftStyle, 30, 'white', openSideBar(navigation))
 			})
-		},
-		DetailLocationScreen: {
-			screen: DetailLocationScreen,
-			navigationOptions: ({ navigation }) => ({
-				title: 'Location on Map',
-				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen'))
-			})
-		},
-		SaveCurrentLocationScreen: {
-			screen: SaveCurrentLocationScreen
 		}
 	},
 	{
 		initialRouteName: 'LandingUserScreen', // Must be the same as the Route Name from above
+		initialRouteParams: catchErrLocation(),
 		defaultNavigationOptions: {
 			headerStyle: {
 				backgroundColor: '#f4511e'
@@ -124,6 +157,48 @@ const favoritesUserScreenStack = createStackNavigator(
 	navigationOptions
 );
 
+const categoriesUserScreenStack = createStackNavigator(
+	{
+		CategoriesUserScreen: {
+			screen: CategoriesUserScreen,
+			navigationOptions: ({ navigation }) => ({
+				title: 'Categories',
+				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen')),
+				headerLeft: buildIcon('bars', headerButtons.btnLeftStyle, 30, 'white', openSideBar(navigation))
+			})
+		}
+	},
+	navigationOptions
+);
+
+const profileUserScreenStack = createStackNavigator(
+	{
+		ProfileUserScreen: {
+			screen: ProfileUserScreen,
+			navigationOptions: ({ navigation }) => ({
+				title: 'Profile',
+				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen')),
+				headerLeft: buildIcon('bars', headerButtons.btnLeftStyle, 30, 'white', openSideBar(navigation))
+			})
+		}
+	},
+	navigationOptions
+);
+
+const settingsUserScreenStack = createStackNavigator(
+	{
+		SettingsUserScreen: {
+			screen: SettingsUserScreen,
+			navigationOptions: ({ navigation }) => ({
+				title: 'Settings',
+				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen')),
+				headerLeft: buildIcon('bars', headerButtons.btnLeftStyle, 30, 'white', openSideBar(navigation))
+			})
+		}
+	},
+	navigationOptions
+);
+
 const logoutUserScreenStack = createStackNavigator(
 	{
 		LogoutUserScreen: {
@@ -138,7 +213,7 @@ const SideBar = createDrawerNavigator(
 		LandingUserScreen: {
 			screen: landingUserScreenStack,
 			navigationOptions: {
-				drawerLabel: 'Locations', // side bar item name
+				title: 'Home', // side bar item name
 				drawerIcon: ({ tintColor }) => (getDrawerIcon('home', tintColor))
 			}
 		},
@@ -147,6 +222,27 @@ const SideBar = createDrawerNavigator(
 			navigationOptions: {
 				drawerLabel: 'Favorite Locations', // side bar item name
 				drawerIcon: ({ tintColor }) => (getDrawerIcon('heart', tintColor))
+			}
+		},
+		CategoriesUserScreen: {
+			screen: categoriesUserScreenStack,
+			navigationOptions: {
+				drawerLabel: 'Categories', // side bar item name
+				drawerIcon: ({ tintColor }) => (getDrawerIcon('bookmark-o', tintColor))
+			}
+		},
+		ProfileUserScreen: {
+			screen: profileUserScreenStack,
+			navigationOptions: {
+				drawerLabel: 'Profile', // side bar item name
+				drawerIcon: ({ tintColor }) => (getDrawerIcon('users', tintColor))
+			}
+		},
+		SettingsUserScreen: {
+			screen: settingsUserScreenStack,
+			navigationOptions: {
+				drawerLabel: 'Settings', // side bar item name
+				drawerIcon: ({ tintColor }) => (getDrawerIcon('key', tintColor))
 			}
 		},
 		LogoutUserScreen: {
@@ -171,4 +267,19 @@ const SideBar = createDrawerNavigator(
 	}
 );
 
-export default createAppContainer(SideBar);
+const AppScreen = createStackNavigator(
+	{
+		SideBar: {
+			screen: SideBar
+		},
+		MainNavigationStacks: {
+			screen: MainNavigationStacks
+		}
+	},
+	{
+		//mode: 'modal',
+		headerMode: 'none'
+	}
+);
+
+export default createAppContainer(AppScreen);

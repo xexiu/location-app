@@ -1,7 +1,7 @@
 const currentPositionOpts = {
 	enableHighAccuracy: true,
 	timeout: 10000,
-	maximumAge: 0
+	maximumAge: 100000
 };
 
 export function getCurrentPosition(options = currentPositionOpts) {

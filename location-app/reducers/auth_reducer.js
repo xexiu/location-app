@@ -1,6 +1,6 @@
 import {
-    FACEBOOK_LOGIN_SUCCESS,
-    FACEBOOK_LOGIN_CANCELED
+	FACEBOOK_LOGIN_SUCCESS,
+	FACEBOOK_LOGIN_CANCELED
 } from '../constants/facebook';
 
 /* eslint-disable camelcase */
