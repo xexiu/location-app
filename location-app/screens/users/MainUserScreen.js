@@ -10,10 +10,19 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { buttonsStyle } from '../../styles';
 import LandingUserScreen from './LandingUserScreen';
 import FavoritesUserScreen from './FavoritesUserScreen';
+import CategoriesUserScreen from './CategoriesUserScreen';
+import ProfileUserScreen from './ProfileUserScreen';
+import SettingsUserScreen from './SettingsUserScreen';
 import LogoutUserScreen from '../users/LogoutUserScreen';
 import DetailLocationScreen from '../locations/DetailLocationScreen';
 import SaveCurrentLocationScreen from '../locations/SaveCurrentLocationScreen';
 import LocationInfoScreen from '../locations/LocationInfoScreen';
+
+/*
+	* TODO:
+	- SettingsUserScreen
+	- ProfileUserScreen
+*/
 
 let currentUserPosition;
 
@@ -148,6 +157,48 @@ const favoritesUserScreenStack = createStackNavigator(
 	navigationOptions
 );
 
+const categoriesUserScreenStack = createStackNavigator(
+	{
+		CategoriesUserScreen: {
+			screen: CategoriesUserScreen,
+			navigationOptions: ({ navigation }) => ({
+				title: 'Categories',
+				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen')),
+				headerLeft: buildIcon('bars', headerButtons.btnLeftStyle, 30, 'white', openSideBar(navigation))
+			})
+		}
+	},
+	navigationOptions
+);
+
+const profileUserScreenStack = createStackNavigator(
+	{
+		ProfileUserScreen: {
+			screen: ProfileUserScreen,
+			navigationOptions: ({ navigation }) => ({
+				title: 'Profile',
+				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen')),
+				headerLeft: buildIcon('bars', headerButtons.btnLeftStyle, 30, 'white', openSideBar(navigation))
+			})
+		}
+	},
+	navigationOptions
+);
+
+const settingsUserScreenStack = createStackNavigator(
+	{
+		SettingsUserScreen: {
+			screen: SettingsUserScreen,
+			navigationOptions: ({ navigation }) => ({
+				title: 'Settings',
+				headerRight: buildIcon('home', headerButtons.btnRightStyle, 30, 'white', navigateTo(navigation, 'LandingUserScreen')),
+				headerLeft: buildIcon('bars', headerButtons.btnLeftStyle, 30, 'white', openSideBar(navigation))
+			})
+		}
+	},
+	navigationOptions
+);
+
 const logoutUserScreenStack = createStackNavigator(
 	{
 		LogoutUserScreen: {
@@ -162,7 +213,7 @@ const SideBar = createDrawerNavigator(
 		LandingUserScreen: {
 			screen: landingUserScreenStack,
 			navigationOptions: {
-				title: 'Locations', // side bar item name
+				title: 'Home', // side bar item name
 				drawerIcon: ({ tintColor }) => (getDrawerIcon('home', tintColor))
 			}
 		},
@@ -171,6 +222,27 @@ const SideBar = createDrawerNavigator(
 			navigationOptions: {
 				drawerLabel: 'Favorite Locations', // side bar item name
 				drawerIcon: ({ tintColor }) => (getDrawerIcon('heart', tintColor))
+			}
+		},
+		CategoriesUserScreen: {
+			screen: categoriesUserScreenStack,
+			navigationOptions: {
+				drawerLabel: 'Categories', // side bar item name
+				drawerIcon: ({ tintColor }) => (getDrawerIcon('bookmark-o', tintColor))
+			}
+		},
+		ProfileUserScreen: {
+			screen: profileUserScreenStack,
+			navigationOptions: {
+				drawerLabel: 'Profile', // side bar item name
+				drawerIcon: ({ tintColor }) => (getDrawerIcon('users', tintColor))
+			}
+		},
+		SettingsUserScreen: {
+			screen: settingsUserScreenStack,
+			navigationOptions: {
+				drawerLabel: 'Settings', // side bar item name
+				drawerIcon: ({ tintColor }) => (getDrawerIcon('key', tintColor))
 			}
 		},
 		LogoutUserScreen: {

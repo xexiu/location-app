@@ -137,8 +137,6 @@ export default class LandingUserScreen extends Component {
 			return (<OfflineNotice />);
 		}
 
-
-
 		if (!!errorMessage) {
 			return (
 				<View>
